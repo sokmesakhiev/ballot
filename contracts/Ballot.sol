@@ -47,6 +47,14 @@ contract Ballot {
     }
   }
 
+  function createVoter(address voterAddress, Voter memory voter) external {
+    voters[voterAddress] = voter;
+  }
+
+  function createProposal(uint proposalIndex) external {
+    proposals[proposalIndex].voteCount += 1;
+  }
+
   // Give `voter` the right to vote on this ballot.
   // May only be called by `chairperson`.
   function giveRightToVote(address voter) external {
