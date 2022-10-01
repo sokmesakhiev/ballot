@@ -97,7 +97,7 @@ describe("Ballot", function () {
         delegate: accounts[2].address,
         vote: 1
       }
-      const proposalIndex: int = 1;
+      const proposalIndex: number = 1;
       await ballotContract.createVoter(accounts[1].address, voter);
 
       await ballotContract.connect(accounts[1]).vote(proposalIndex);
@@ -126,7 +126,7 @@ describe("Ballot", function () {
         delegate: '0x0000000000000000000000000000000000000000',
         vote: 1
       }
-      const proposalIndex: int = 1;
+      const proposalIndex: number = 1;
       await ballotContract.createVoter(accounts[1].address, voter);
       await ballotContract.createVoter(accounts[2].address, delegatedVoter);
 
