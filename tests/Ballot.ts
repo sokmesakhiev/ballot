@@ -70,7 +70,7 @@ describe("Ballot", function () {
       const voter = {
         voted: true,
         weight: 0,
-        delegate: accounts[2].address,
+        delegate: '0x0000000000000000000000000000000000000000',
         vote: 1
       }
       await ballotContract.createVoter(accounts[1].address, voter);
@@ -81,7 +81,7 @@ describe("Ballot", function () {
       const voter = {
         voted: false,
         weight: 1,
-        delegate: accounts[2].address,
+        delegate: '0x0000000000000000000000000000000000000000',
         vote: 1
       }
       await ballotContract.createVoter(accounts[1].address, voter);
@@ -94,7 +94,7 @@ describe("Ballot", function () {
       const voter = {
         voted: false,
         weight: 1,
-        delegate: accounts[2].address,
+        delegate: '0x0000000000000000000000000000000000000000',
         vote: 1
       }
       const proposalIndex: number = 1;
@@ -121,10 +121,39 @@ describe("Ballot", function () {
       }
 
       const delegatedVoter = {
-        voted: true,
+        voted: false,
         weight: 1,
         delegate: '0x0000000000000000000000000000000000000000',
-        vote: 1
+        vote: 0
+      }
+      const proposalIndex: number = 1;
+      await ballotContract.createVoter(accounts[1].address, voter);
+      await ballotContract.createVoter(accounts[2].address, delegatedVoter);
+      await ballotContract.connect(accounts[2]).vote(1);
+
+      await ballotContract.connect(accounts[1]).delegate(accounts[2].address);
+
+      const proposal = await ballotContract.proposals(proposalIndex);
+      const firstAccountVoter = await ballotContract.voters(accounts[1].address);
+
+      expect(firstAccountVoter.voted).to.eq(true);
+      expect(firstAccountVoter.delegate).to.eq(accounts[2].address);
+      expect(proposal.voteCount).to.eq(2);
+    });
+
+    it("should increase weight of delegated account", async () => {
+      const voter = {
+        voted: false,
+        weight: 1,
+        delegate: '0x0000000000000000000000000000000000000000',
+        vote: 0
+      }
+
+      const delegatedVoter = {
+        voted: false,
+        weight: 1,
+        delegate: '0x0000000000000000000000000000000000000000',
+        vote: 0
       }
       const proposalIndex: number = 1;
       await ballotContract.createVoter(accounts[1].address, voter);
@@ -132,12 +161,8 @@ describe("Ballot", function () {
 
       await ballotContract.connect(accounts[1]).delegate(accounts[2].address);
 
-      const proposal = await ballotContract.proposals(proposalIndex);
-      const updatedVoter = await ballotContract.voters(accounts[1].address);
-
-      expect(updatedVoter.voted).to.eq(true);
-      expect(updatedVoter.delegate).to.eq(accounts[2].address);
-      expect(proposal.voteCount).to.eq(1);
+      const secondAccountVoter = await ballotContract.voters(accounts[2].address);
+      expect(secondAccountVoter.weight).to.eq(2);
     });
   });
 
